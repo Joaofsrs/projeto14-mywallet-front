@@ -1,54 +1,77 @@
 import styled from "styled-components"
 import { BiExit } from "react-icons/bi"
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai"
+import { useContext, useEffect, useState } from "react"
+import UserContext from "../UserContext"
+import axios from "axios"
+import { Link } from "react-router-dom"
 
 export default function HomePage() {
-  return (
-    <HomeContainer>
-      <Header>
-        <h1>Olá, Fulano</h1>
-        <BiExit />
-      </Header>
+    const { token } = useContext(UserContext);
+    const [transactions, setTransactions] = useState([]);
+    const [name, setName] = useState("");
+    useEffect(() => {
+        const header = {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        };
+        axios.get("http://localhost:5000/home", header)
+            .then((res) => {
+                console.log(res.data);
+                setName(res.data.userName);
+                setTransactions(res.data.transactions)
+            })
+            .catch((err) => {
+                alert(err.message);
+            });
+    }, [token]);
+    return (
+        <HomeContainer>
+            <Header>
+                <h1>Olá, {name}</h1>
+                <BiExit />
+            </Header>
 
-      <TransactionsContainer>
-        <ul>
-          <ListItemContainer>
-            <div>
-              <span>30/11</span>
-              <strong>Almoço mãe</strong>
-            </div>
-            <Value color={"negativo"}>120,00</Value>
-          </ListItemContainer>
+            <TransactionsContainer>
+                <ul>
+                    {transactions.map((transaction) => {
+                        return(
+                            <ListItemContainer>
+                                <div>
+                                    <span>{transaction.day}</span>
+                                    <strong>{transaction.description}</strong>
+                                </div>
+                                <Value color={transaction.type}>{transaction.value}</Value>
+                            </ListItemContainer>
+                        );
+                    })}
+                </ul>
 
-          <ListItemContainer>
-            <div>
-              <span>15/11</span>
-              <strong>Salário</strong>
-            </div>
-            <Value color={"positivo"}>3000,00</Value>
-          </ListItemContainer>
-        </ul>
-
-        <article>
-          <strong>Saldo</strong>
-          <Value color={"positivo"}>2880,00</Value>
-        </article>
-      </TransactionsContainer>
+                <article>
+                    <strong>Saldo</strong>
+                    <Value color={"positivo"}>2880,00</Value>
+                </article>
+            </TransactionsContainer>
 
 
-      <ButtonsContainer>
-        <button>
-          <AiOutlinePlusCircle />
-          <p>Nova <br /> entrada</p>
-        </button>
-        <button>
-          <AiOutlineMinusCircle />
-          <p>Nova <br />saída</p>
-        </button>
-      </ButtonsContainer>
+            <ButtonsContainer>
+                <Link to={"/nova-transacao/entrada"} >
+                    <button>
+                        <AiOutlinePlusCircle />
+                        <p>Nova <br /> entrada</p>
+                    </button>
+                </Link>
+                <Link to={"/nova-transacao/saida"} >
+                    <button>
+                        <AiOutlineMinusCircle />
+                        <p>Nova <br />saída</p>
+                    </button>
+                </Link>
+            </ButtonsContainer>
 
-    </HomeContainer>
-  )
+        </HomeContainer>
+    )
 }
 
 const HomeContainer = styled.div`
@@ -105,7 +128,7 @@ const ButtonsContainer = styled.section`
 const Value = styled.div`
   font-size: 16px;
   text-align: right;
-  color: ${(props) => (props.color === "positivo" ? "green" : "red")};
+  color: ${(props) => (props.color === "entrada" ? "green" : "red")};
 `
 const ListItemContainer = styled.li`
   display: flex;
