@@ -25,7 +25,7 @@ export default function HomePage() {
                     Authorization: `Bearer ${token}`,
                 }
             };
-            axios.get("http://localhost:5000/home", header)
+            axios.get("https://mywallet-meqd.onrender.com/home", header)
                 .then((res) => {
                     setName(res.data.userName);
                     setTransactions(res.data.transactions)
@@ -46,7 +46,7 @@ export default function HomePage() {
     }, [token, navigate]);
 
     function logout() {
-        axios.delete(`http://localhost:5000/delete/${token}`)
+        axios.delete(`https://mywallet-meqd.onrender.com/delete/${token}`)
             .then((res) => {
                 setToken(undefined);
                 navigate("/");

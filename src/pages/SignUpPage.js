@@ -32,7 +32,7 @@ export default function SignUpPage() {
             setDisableButton(true);
             setSendSignUp(false);
         }else{
-            axios.post("http://localhost:5000/cadastro", form)
+            axios.post("https://mywallet-meqd.onrender.com/cadastro", form)
             .then((res) => {      
                 setDisableButton(true);
                 setSendSignUp(false);

@@ -39,7 +39,7 @@ export default function TransactionsPage() {
             }
         };
         setSendTransaction(true);
-        axios.post(`http://localhost:5000/nova-transacao/${tipo}`, form, header)
+        axios.post(`https://mywallet-meqd.onrender.com/nova-transacao/${tipo}`, form, header)
             .then((res) => {
                 setSendTransaction(false)
                 navigate("/home");
