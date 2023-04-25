@@ -7,26 +7,31 @@ import dotenv from "dotenv";
 
 export default function TransactionsPage() {
     const { tipo } = useParams();
-    const [form, setForm] = useState({value: "", description: ""});
+    const [form, setForm] = useState({ value: "", description: "" });
     const [disableButton, setDisableButton] = useState(true);
     const [sendTransaction, setSendTransaction] = useState(false);
     const { token } = useContext(UserContext);
     const navigate = useNavigate();
     dotenv.config();
 
-    function handleForm(e){
+    function handleForm(e) {
         setForm({ ...form, [e.target.name]: e.target.value })
     }
 
-    useEffect(() => { 
-        if(form.value && form.description){
-            setDisableButton(false)
-        }else{
-            setDisableButton(true);
+    useEffect(() => {
+        if (!token) {
+            navigate("/");
+            return
+        } else {
+            if (form.value && form.description) {
+                setDisableButton(false)
+            } else {
+                setDisableButton(true);
+            }
         }
-    }, [form]);
+    }, [form, token, navigate]);
 
-    function submitTransaction(e){
+    function submitTransaction(e) {
         e.preventDefault();
         const header = {
             headers: {
@@ -43,17 +48,17 @@ export default function TransactionsPage() {
                 alert(`${err.message}\n${err.request.statusText} ${err.request.status}`);
                 setDisableButton(true);
                 setSendTransaction(false);
-                console.log(err);
             });
     }
+
 
     return (
         <TransactionsContainer>
             <h1>Nova {tipo}</h1>
             <form onSubmit={submitTransaction}>
                 <input
-                    placeholder="Valor" 
-                    type="text" 
+                    placeholder="Valor"
+                    type="text"
                     id="value"
                     name="value"
                     value={form.value}
@@ -61,9 +66,9 @@ export default function TransactionsPage() {
                     required
                     disabled={sendTransaction}
                 />
-                <input 
-                    placeholder="Descrição" 
-                    type="text" 
+                <input
+                    placeholder="Descrição"
+                    type="text"
                     id="description"
                     name="description"
                     value={form.description}
@@ -71,10 +76,11 @@ export default function TransactionsPage() {
                     required
                     disabled={sendTransaction}
                 />
-                <button disabled={sendTransaction||disableButton}>Salvar {tipo}</button>
+                <button disabled={sendTransaction || disableButton}>Salvar {tipo}</button>
             </form>
         </TransactionsContainer>
     )
+
 }
 
 const TransactionsContainer = styled.main`

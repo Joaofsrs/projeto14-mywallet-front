@@ -30,18 +30,18 @@ export default function SignInPage() {
     function submitSignIn(e) {
         e.preventDefault();
         setSendSignIn(true);
-        console.log(form);
         axios.post("http://localhost:5000/", form)
             .then((res) => {
                 setSendSignIn(false)
                 setToken(res.data);
+                setDisableButton(true);
+                setSendSignIn(false);
                 navigate("/home");
             })
             .catch((err) => {
                 alert(`${err.message}\n${err.request.statusText} ${err.request.status}`);
                 setDisableButton(true);
                 setSendSignIn(false);
-                console.log(err);
             });
     }
     return (

@@ -27,22 +27,21 @@ export default function SignUpPage() {
     function submitSignUp(e){
         e.preventDefault();
         setSendSignUp(true);
-        console.log(form);
         if(form.password !== form.confirmPassword){
             alert("Senha diferente da senha de confirmação")
             setDisableButton(true);
             setSendSignUp(false);
         }else{
             axios.post("http://localhost:5000/cadastro", form)
-            .then((res) => {
-                setSendSignUp(false)
+            .then((res) => {      
+                setDisableButton(true);
+                setSendSignUp(false);
                 navigate("/");
             })
             .catch((err) => {
                 alert(`${err.message}\n${err.request.statusText} ${err.request.status}`);
                 setDisableButton(true);
                 setSendSignUp(false);
-                console.log(err);
             });
         }
     }

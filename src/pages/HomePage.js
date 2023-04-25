@@ -4,46 +4,63 @@ import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai"
 import { useContext, useEffect, useState } from "react"
 import UserContext from "../UserContext"
 import axios from "axios"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import dotenv from "dotenv";
 
 export default function HomePage() {
-    const { token } = useContext(UserContext);
+    const { token, setToken } = useContext(UserContext);
     const [transactions, setTransactions] = useState([]);
     const [name, setName] = useState("");
     const [total, setTotal] = useState(0);
+    const navigate = useNavigate();
     dotenv.config();
 
     useEffect(() => {
-        const header = {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
-        };
-        axios.get("http://localhost:5000/home", header)
-            .then((res) => {
-                console.log(res.data);
-                setName(res.data.userName);
-                setTransactions(res.data.transactions)
-                let newTotal = 0;
-                for(let i =0; i < res.data.transactions.length; i++){
-                    if(res.data.transactions[i].type === "entrada"){
-                        newTotal += Number(res.data.transactions[i].value);
-                    }else{
-                        newTotal -= Number(res.data.transactions[i].value);
-                    }
+        if (!token) {
+            navigate("/");
+            return;
+        } else {
+            const header = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 }
-                setTotal(newTotal);
+            };
+            axios.get("http://localhost:5000/home", header)
+                .then((res) => {
+                    setName(res.data.userName);
+                    setTransactions(res.data.transactions)
+                    let newTotal = 0;
+                    for (let i = 0; i < res.data.transactions.length; i++) {
+                        if (res.data.transactions[i].type === "entrada") {
+                            newTotal += Number(res.data.transactions[i].value);
+                        } else {
+                            newTotal -= Number(res.data.transactions[i].value);
+                        }
+                    }
+                    setTotal(newTotal);
+                })
+                .catch((err) => {
+                    alert(err.message);
+                });
+        }
+    }, [token, navigate]);
+
+    function logout() {
+        axios.delete(`http://localhost:5000/delete/${token}`)
+            .then((res) => {
+                setToken(undefined);
+                navigate("/");
             })
             .catch((err) => {
                 alert(err.message);
             });
-    }, [token]);
+    }
+
     return (
         <HomeContainer>
             <Header>
                 <h1>Olá, {name}</h1>
-                <BiExit />
+                <BiExit onClick={logout} />
             </Header>
 
             <TransactionsContainer>
@@ -85,6 +102,7 @@ export default function HomePage() {
 
         </HomeContainer>
     )
+
 }
 
 const HomeContainer = styled.div`
