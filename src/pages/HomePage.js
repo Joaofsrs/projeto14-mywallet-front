@@ -5,11 +5,15 @@ import { useContext, useEffect, useState } from "react"
 import UserContext from "../UserContext"
 import axios from "axios"
 import { Link } from "react-router-dom"
+import dotenv from "dotenv";
 
 export default function HomePage() {
     const { token } = useContext(UserContext);
     const [transactions, setTransactions] = useState([]);
     const [name, setName] = useState("");
+    const [total, setTotal] = useState(0);
+    dotenv.config();
+
     useEffect(() => {
         const header = {
             headers: {
@@ -21,6 +25,15 @@ export default function HomePage() {
                 console.log(res.data);
                 setName(res.data.userName);
                 setTransactions(res.data.transactions)
+                let newTotal = 0;
+                for(let i =0; i < res.data.transactions.length; i++){
+                    if(res.data.transactions[i].type === "entrada"){
+                        newTotal += Number(res.data.transactions[i].value);
+                    }else{
+                        newTotal -= Number(res.data.transactions[i].value);
+                    }
+                }
+                setTotal(newTotal);
             })
             .catch((err) => {
                 alert(err.message);
@@ -42,7 +55,7 @@ export default function HomePage() {
                                     <span>{transaction.day}</span>
                                     <strong>{transaction.description}</strong>
                                 </div>
-                                <Value color={transaction.type}>{transaction.value}</Value>
+                                <Value color={transaction.type}>{Number(transaction.value).toFixed(2)}</Value>
                             </ListItemContainer>
                         );
                     })}
@@ -50,7 +63,7 @@ export default function HomePage() {
 
                 <article>
                     <strong>Saldo</strong>
-                    <Value color={"positivo"}>2880,00</Value>
+                    <Value color={(total >= 0) ? "entrada" : "saida"}>{Number(total).toFixed(2)}</Value>
                 </article>
             </TransactionsContainer>
 

@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"
 import styled from "styled-components"
 import UserContext from "../UserContext";
+import dotenv from "dotenv";
 
 export default function TransactionsPage() {
     const { tipo } = useParams();
@@ -11,6 +12,8 @@ export default function TransactionsPage() {
     const [sendTransaction, setSendTransaction] = useState(false);
     const { token } = useContext(UserContext);
     const navigate = useNavigate();
+    dotenv.config();
+
     function handleForm(e){
         setForm({ ...form, [e.target.name]: e.target.value })
     }

@@ -4,12 +4,14 @@ import MyWalletLogo from "../components/MyWalletLogo"
 import { useState, useEffect, useContext } from "react"
 import axios from "axios"
 import UserContext from "../UserContext"
+import dotenv from "dotenv";
 
 export default function SignInPage() {
     const [form, setForm] = useState({ email: "", password: "" })
     const [disableButton, setDisableButton] = useState(true);
     const [sendSignIn, setSendSignIn] = useState(false);
     const navigate = useNavigate();
+    dotenv.config();
 
     const { setToken } = useContext(UserContext);
 

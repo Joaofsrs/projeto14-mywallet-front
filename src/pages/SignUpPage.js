@@ -3,12 +3,14 @@ import styled from "styled-components";
 import MyWalletLogo from "../components/MyWalletLogo";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import dotenv from "dotenv";
 
 export default function SignUpPage() {
     const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
     const [disableButton, setDisableButton] = useState(true);
     const [sendSignUp, setSendSignUp] = useState(false);
     const navigate = useNavigate();
+    dotenv.config();
 
     function handleForm(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
